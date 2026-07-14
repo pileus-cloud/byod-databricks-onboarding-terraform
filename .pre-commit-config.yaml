@@ -6,6 +6,11 @@ repos:
       - id: terraform_validate
       - id: terraform_tflint
       - id: terraform_trivy
+      - id: terraform_docs
+        args:
+          - --hook-config=--path-to-file=README.md
+          - --hook-config=--add-to-existing-file=true
+          - --hook-config=--create-file=false
 
   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
     rev: v9.23.0
