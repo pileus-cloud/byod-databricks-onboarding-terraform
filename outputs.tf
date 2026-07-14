@@ -1,6 +1,7 @@
 # -----------------------------------------------------------------------------
-# Outputs to enter in Umbrellacost onboarding (byod-mgmt account provider_config
-# / Secrets Manager secret)
+# Values needed to connect this Databricks account to Umbrellacost. Provide
+# these when you complete onboarding — this module does not submit them
+# anywhere on its own.
 # -----------------------------------------------------------------------------
 
 output "service_principal_id" {

@@ -10,17 +10,15 @@ At a high level, the module will:
 4. Assign the Service Principal permissions to use the SQL Warehouse
 5. Grant the Service Principal `USE_SCHEMA` on `system.billing` and `system.access`, plus table-level `SELECT` on exactly `system.billing.usage`, `system.billing.list_prices`, and `system.access.workspaces_latest` — mirrors the manual GRANT statements in the onboarding README/CUSTOMER_SETUP_GUIDE exactly. `system.access` is intentionally **not** granted schema-wide, since that would also expose `system.access.audit` (the full user audit log). `system.compute` is not granted at all — it's for a tag-enrichment feature that isn't implemented in the export container yet.
 
-After applying this module, the outputs (`service_principal_id`, `service_principal_secret`, `umbrellacost_billing_warehouse_id`) feed directly into the Umbrellacost onboarding secret:
+This module runs entirely in **your** Databricks account/workspace and does not talk to Umbrellacost or submit anything anywhere. After `terraform apply`, collect these values from the outputs and your workspace — you'll be asked to provide them as a separate step when connecting your account in Umbrellacost (currently coordinated with your Umbrellacost contact; self-service entry in the app is planned):
 
-```json
-{
-  "clientId": "<service_principal_id output>",
-  "clientSecret": "<service_principal_secret output>",
-  "workspaceUrl": "<your workspace URL>",
-  "warehouseId": "<umbrellacost_billing_warehouse_id output>",
-  "accountId": "<your Databricks Account ID>"
-}
-```
+| Value | Source |
+|---|---|
+| Client ID | `service_principal_id` output |
+| Client Secret | `service_principal_secret` output |
+| Warehouse ID | `umbrellacost_billing_warehouse_id` output |
+| Workspace URL | your Databricks workspace URL |
+| Databricks Account ID | Account Console → your account |
 
 ### IP allowlist
 
@@ -89,10 +87,10 @@ var.databricks_token
 
 `databricks_host` is safe to save in `terraform.tfvars` for repeated runs. Keep `databricks_token` out of `tfvars`/shell history — let it prompt each time (or export `TF_VAR_databricks_token` only for the duration of one session) so it isn't left lying around after testing.
 
-After `terraform apply`, build the onboarding secret JSON directly from the outputs — use `terraform output -json`, not plain `terraform output`, since the latter redacts `client_secret`:
+After `terraform apply`, this local variable is only for driving the connectivity test script below — it's not submitted anywhere. Build it from the outputs with `terraform output -json` (not plain `terraform output`, which redacts `client_secret`):
 
 ```bash
-SECRET=$(terraform output -json | jq -c '{
+CREDS=$(terraform output -json | jq -c '{
   clientId: .client_id.value,
   clientSecret: .client_secret.value,
   workspaceUrl: .workspace_url.value,
@@ -101,14 +99,14 @@ SECRET=$(terraform output -json | jq -c '{
 }')
 ```
 
-Verify connectivity with the standalone test script before wiring the account into the real onboarding pipeline:
+Verify connectivity locally before providing these values to Umbrellacost as part of onboarding:
 
 ```bash
 python test-connection/test_databricks_connection.py \
-  --host "$(echo $SECRET | jq -r .workspaceUrl)" \
-  --warehouse_id "$(echo $SECRET | jq -r .warehouseId)" \
-  --client_id "$(echo $SECRET | jq -r .clientId)" \
-  --client_secret "$(echo $SECRET | jq -r .clientSecret)"
+  --host "$(echo $CREDS | jq -r .workspaceUrl)" \
+  --warehouse_id "$(echo $CREDS | jq -r .warehouseId)" \
+  --client_id "$(echo $CREDS | jq -r .clientId)" \
+  --client_secret "$(echo $CREDS | jq -r .clientSecret)"
 ```
 
 A `FAIL` on `system.compute.clusters` is expected — this module intentionally doesn't grant `system.compute` (see grant list above). Only `system.billing.usage`, `system.billing.list_prices`, and `system.access.workspaces_latest` need to pass.
