@@ -1,6 +1,7 @@
-# Local test harness for terraform-databricks-umbrellacost-integration.
-# Not part of the module itself — creates real resources in the target
-# Databricks workspace. Run `terraform destroy` when done testing.
+# Ready-to-run onboarding config for terraform-databricks-umbrellacost-integration.
+# Clone this repo, cd into this folder, and run `terraform apply` — the
+# actual reusable module lives in ../module. Creates real resources in your
+# Databricks workspace.
 
 terraform {
   required_providers {
@@ -34,32 +35,41 @@ provider "databricks" {
 }
 
 module "umbrellacost_integration" {
-  source = "../../"
+  source        = "../module"
+  workspace_url = var.databricks_host
+  account_id    = var.databricks_account_id
   # enable_ip_allowlist     = true
   # umbrellacost_static_ips = ["1.2.3.4/32"]
 }
 
+# Trivial passthroughs — the module's own outputs are already named to match
+# what the Umbrellacost wizard expects, so no aliasing needed here.
 output "client_id" {
-  value = module.umbrellacost_integration.service_principal_id
+  value = module.umbrellacost_integration.client_id
 }
 
 output "client_secret" {
-  value     = module.umbrellacost_integration.service_principal_secret
+  value     = module.umbrellacost_integration.client_secret
   sensitive = true
 }
 
 output "warehouse_id" {
-  value = module.umbrellacost_integration.umbrellacost_billing_warehouse_id
+  value = module.umbrellacost_integration.warehouse_id
 }
 
 output "workspace_url" {
-  value = var.databricks_host
+  value = module.umbrellacost_integration.workspace_url
 }
 
 output "account_id" {
-  value = var.databricks_account_id
+  value = module.umbrellacost_integration.account_id
 }
 
 output "metastore_name" {
   value = module.umbrellacost_integration.metastore_name
+}
+
+output "creds" {
+  value     = module.umbrellacost_integration.creds
+  sensitive = true
 }
