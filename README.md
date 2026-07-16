@@ -41,31 +41,14 @@ Confirm both admin roles are in place *before* running `apply` — check 1 and 2
 
 ## Onboarding
 
-1. Run `terraform apply` against your Databricks account/workspace (see [Prerequisites](#prerequisites)).
-2. In the Umbrellacost onboarding wizard, choose **Automatically (Terraform)**, run `terraform output -json creds | jq`, and paste the result into the **Terraform output JSON** field. Umbrellacost parses the credentials and validates connectivity automatically — no manual GRANTs, no separate credential entry.
+1. Clone this repo and `cd onboarding/`.
+2. Set `databricks_host` and `databricks_account_id` (in `terraform.tfvars`, or answer the prompts interactively) and run `terraform apply` (see [Prerequisites](#prerequisites)). `onboarding/` is a ready-to-run config — the reusable module itself lives in `module/`, referenced via `source = "../module"`, so there's nothing to write yourself.
+3. Run `terraform output -json creds | jq`.
+4. In the Umbrellacost onboarding wizard, choose **Automatically (Terraform)** and paste the result into the **Terraform output JSON** field. Umbrellacost parses the credentials and validates connectivity automatically — no manual GRANTs, no separate credential entry.
 
-This module only sets up your Databricks side — it doesn't submit these values anywhere itself; pasting the output into the wizard is the step that does.
+This repo only sets up your Databricks side — it doesn't submit these values anywhere itself; pasting the output into the wizard is the step that does.
 
-The `creds` output bundles `client_id`, `client_secret`, `warehouse_id`, `workspace_url`, and `account_id` into one flat object — `workspace_url`/`account_id` are your own values, passed in since the module can't derive them. Use this root config (save as e.g. `onboarding.tf` in your clone of this repo, adjusting `source` if you saved it elsewhere) — `terraform output -json creds` from it comes back unwrapped with exactly the 5 keys the wizard needs:
-
-```hcl
-provider "databricks" {
-  host  = "https://dbc-xxxxxx.cloud.databricks.com" # your workspace URL
-  # authenticate to your Databricks workspace...
-  # https://registry.terraform.io/providers/databricks/databricks/latest/docs#authentication
-}
-
-module "umbrellacost_integration" {
-  source        = "./"
-  workspace_url = "https://dbc-xxxxxx.cloud.databricks.com" # match provider host above
-  account_id    = "<your-databricks-account-id>"            # Account Console → your account
-}
-
-output "creds" {
-  value     = module.umbrellacost_integration.creds
-  sensitive = true
-}
-```
+The `creds` output bundles `client_id`, `client_secret`, `warehouse_id`, `workspace_url`, and `account_id` into one flat object — `terraform output -json creds` returns it unwrapped, with exactly the 5 keys the wizard needs.
 
 ### Example
 
@@ -88,7 +71,7 @@ Before pasting into the wizard, you can sanity-check connectivity yourself with 
 
 ```bash
 CREDS=$(terraform output -json creds)
-python test-connection/test_databricks_connection.py \
+python ../test-connection/test_databricks_connection.py \
   --host "$(echo $CREDS | jq -r .workspace_url)" \
   --warehouse_id "$(echo $CREDS | jq -r .warehouse_id)" \
   --client_id "$(echo $CREDS | jq -r .client_id)" \

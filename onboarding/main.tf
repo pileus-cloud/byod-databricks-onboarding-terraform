@@ -1,6 +1,7 @@
-# Local test harness for terraform-databricks-umbrellacost-integration.
-# Not part of the module itself — creates real resources in the target
-# Databricks workspace. Run `terraform destroy` when done testing.
+# Ready-to-run onboarding config for terraform-databricks-umbrellacost-integration.
+# Clone this repo, cd into this folder, and run `terraform apply` — the
+# actual reusable module lives in ../module. Creates real resources in your
+# Databricks workspace.
 
 terraform {
   required_providers {
@@ -34,7 +35,7 @@ provider "databricks" {
 }
 
 module "umbrellacost_integration" {
-  source        = "../"
+  source        = "../module"
   workspace_url = var.databricks_host
   account_id    = var.databricks_account_id
   # enable_ip_allowlist     = true

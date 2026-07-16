@@ -7,8 +7,9 @@ repos:
       - id: terraform_tflint
       - id: terraform_trivy
       - id: terraform_docs
+        files: ^module/
         args:
-          - --hook-config=--path-to-file=TERRAFORM_DOCS.md
+          - --hook-config=--path-to-file=../TERRAFORM_DOCS.md
           - --hook-config=--add-to-existing-file=true
           - --hook-config=--create-file=false
 
