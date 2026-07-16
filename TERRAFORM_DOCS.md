@@ -43,15 +43,20 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_account_id"></a> [account\_id](#input\_account\_id) | Your Databricks Account ID (from the Account Console). Not fetchable via the workspace API — passed through here purely so it's echoed back in the account\_id output alongside the other onboarding values. | `string` | n/a | yes |
 | <a name="input_enable_ip_allowlist"></a> [enable\_ip\_allowlist](#input\_enable\_ip\_allowlist) | Enable IP allowlist restricting Databricks workspace access to Umbrellacost's static egress IPs. Requires umbrellacost\_static\_ips to be set. | `bool` | `false` | no |
 | <a name="input_umbrellacost_static_ips"></a> [umbrellacost\_static\_ips](#input\_umbrellacost\_static\_ips) | Umbrellacost's static egress IP addresses, allowlisted when enable\_ip\_allowlist = true. Must be populated with real values before enabling — left empty by default | `list(string)` | `[]` | no |
+| <a name="input_workspace_url"></a> [workspace\_url](#input\_workspace\_url) | Your Databricks workspace URL, e.g. https://dbc-xxxxxx.cloud.databricks.com. Not used to configure the provider (that's the caller's responsibility) — passed through here purely so it's echoed back in the workspace\_url output alongside the other onboarding values. | `string` | n/a | yes |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
+| <a name="output_account_id"></a> [account\_id](#output\_account\_id) | Echoes var.account\_id — included so terraform output -json has this alongside the other onboarding values |
+| <a name="output_client_id"></a> [client\_id](#output\_client\_id) | OAuth Client ID of the Umbrellacost billing service principal |
+| <a name="output_client_secret"></a> [client\_secret](#output\_client\_secret) | OAuth secret of the Umbrellacost billing service principal |
+| <a name="output_creds"></a> [creds](#output\_creds) | Bundles client\_id/client\_secret/warehouse\_id/workspace\_url/account\_id into one flat object — `terraform output -json creds` returns it unwrapped (no jq needed to strip the {value, sensitive} wrapper), for pasting into the Umbrellacost onboarding wizard |
 | <a name="output_metastore_name"></a> [metastore\_name](#output\_metastore\_name) | Metastore attached to this workspace — confirm Metastore Admin is set on this exact metastore (see README Prerequisites) before apply |
-| <a name="output_service_principal_id"></a> [service\_principal\_id](#output\_service\_principal\_id) | OAuth Client ID of the Umbrellacost billing service principal |
-| <a name="output_service_principal_secret"></a> [service\_principal\_secret](#output\_service\_principal\_secret) | OAuth secret of the Umbrellacost billing service principal |
-| <a name="output_umbrellacost_billing_warehouse_id"></a> [umbrellacost\_billing\_warehouse\_id](#output\_umbrellacost\_billing\_warehouse\_id) | ID of the Umbrellacost billing SQL Warehouse |
+| <a name="output_warehouse_id"></a> [warehouse\_id](#output\_warehouse\_id) | ID of the Umbrellacost billing SQL Warehouse |
+| <a name="output_workspace_url"></a> [workspace\_url](#output\_workspace\_url) | Echoes var.workspace\_url — included so terraform output -json has this alongside the other onboarding values |
 <!-- END_TF_DOCS -->

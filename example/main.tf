@@ -34,47 +34,41 @@ provider "databricks" {
 }
 
 module "umbrellacost_integration" {
-  source = "../../"
+  source        = "../"
+  workspace_url = var.databricks_host
+  account_id    = var.databricks_account_id
   # enable_ip_allowlist     = true
   # umbrellacost_static_ips = ["1.2.3.4/32"]
 }
 
+# Trivial passthroughs — the module's own outputs are already named to match
+# what the Umbrellacost wizard expects, so no aliasing needed here.
 output "client_id" {
-  value = module.umbrellacost_integration.service_principal_id
+  value = module.umbrellacost_integration.client_id
 }
 
 output "client_secret" {
-  value     = module.umbrellacost_integration.service_principal_secret
+  value     = module.umbrellacost_integration.client_secret
   sensitive = true
 }
 
 output "warehouse_id" {
-  value = module.umbrellacost_integration.umbrellacost_billing_warehouse_id
+  value = module.umbrellacost_integration.warehouse_id
 }
 
 output "workspace_url" {
-  value = var.databricks_host
+  value = module.umbrellacost_integration.workspace_url
 }
 
 output "account_id" {
-  value = var.databricks_account_id
+  value = module.umbrellacost_integration.account_id
 }
 
 output "metastore_name" {
   value = module.umbrellacost_integration.metastore_name
 }
 
-# Bundles the values above into one flat JSON blob for the connectivity test
-# script — `terraform output -json creds` returns it unwrapped (no jq
-# needed), unlike dumping all outputs at once which wraps each in
-# {value, sensitive}.
 output "creds" {
-  value = {
-    client_id     = module.umbrellacost_integration.service_principal_id
-    client_secret = module.umbrellacost_integration.service_principal_secret
-    warehouse_id  = module.umbrellacost_integration.umbrellacost_billing_warehouse_id
-    workspace_url = var.databricks_host
-    account_id    = var.databricks_account_id
-  }
+  value     = module.umbrellacost_integration.creds
   sensitive = true
 }
