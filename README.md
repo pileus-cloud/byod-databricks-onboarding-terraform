@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="img/logo.png" alt="Umbrella" width="400">
+  <img src="img/logo.png" alt="Umbrella">
 </p>
 
 # terraform-databricks-umbrellacost-integration
