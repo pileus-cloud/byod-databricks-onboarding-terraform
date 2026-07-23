@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="img/logo.png" alt="Umbrella" width="275">
+  <img src="img/logo.png" alt="Umbrella" width="400">
 </p>
 
 # terraform-databricks-umbrellacost-integration
@@ -8,12 +8,12 @@ This module provisions all resources and permissions required to integrate your 
 
 ## Contents
 
-- [What This Module Does](#what-this-module-does)
+- [Overview](#overview)
 - [Prerequisites](#prerequisites)
 - [Onboarding](#onboarding)
 - [Reference](#reference)
 
-## What This Module Does
+## Overview
 
 1. Create a Service Principal (`umbrellacost-billing-sp`)
 2. Create OAuth credentials for the Service Principal
@@ -82,7 +82,7 @@ python ../test-connection/test_databricks_connection.py \
   --client_secret "$(echo $CREDS | jq -r .client_secret)"
 ```
 
-A `FAIL` on `system.compute.clusters` is expected — this module intentionally doesn't grant `system.compute` (see [What This Module Does](#what-this-module-does)). Only `system.billing.usage`, `system.billing.list_prices`, and `system.access.workspaces_latest` need to pass.
+A `FAIL` on `system.compute.clusters` is expected — this module intentionally doesn't grant `system.compute` (see [Overview](#overview)). Only `system.billing.usage`, `system.billing.list_prices`, and `system.access.workspaces_latest` need to pass.
 
 ## Reference
 
