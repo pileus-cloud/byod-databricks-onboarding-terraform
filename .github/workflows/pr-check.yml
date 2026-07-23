@@ -73,17 +73,11 @@ jobs:
         with:
           persist-credentials: false
 
+      # checkov 3.3.8, pinned by image digest.
       - name: Run Checkov
-        uses: bridgecrewio/checkov-action@99bb2caf247dfd9f03cf984373bc6043d4e32ebf # v12.1347.0
-        with:
-          directory: .
-          framework: terraform
-          output_format: cli
-          download_external_modules: true
-          # Hard-fail on findings — this is a new check with no established
-          # baseline yet, so the first run may need a pass to clear or
-          # explicitly skip (via inline `checkov:skip=CKV_*` comments)
-          # existing findings before this can stay false long-term. Flip to
-          # true temporarily if that first pass needs to land separately
-          # from turning enforcement on.
-          soft_fail: false
+        run: |
+          docker run --rm \
+            -v "${{ github.workspace }}:/tf" \
+            -w /tf \
+            bridgecrew/checkov@sha256:c64ffb6d6fc8087c896341a2c697770a04a1cf558db04fa7b8129d8ca6bce336 \
+            -d . --framework terraform --download-external-modules true --compact
