@@ -1,15 +1,19 @@
+<p align="center">
+  <img src="img/logo.png" alt="Umbrella">
+</p>
+
 # terraform-databricks-umbrellacost-integration
 
 This module provisions all resources and permissions required to integrate your Databricks account with Umbrellacost. It runs entirely in **customer** Databricks account/workspace — it does not talk to Umbrellacost or submit anything anywhere.
 
 ## Contents
 
-- [What This Module Does](#what-this-module-does)
+- [Overview](#overview)
 - [Prerequisites](#prerequisites)
 - [Onboarding](#onboarding)
 - [Reference](#reference)
 
-## What This Module Does
+## Overview
 
 1. Create a Service Principal (`umbrellacost-billing-sp`)
 2. Create OAuth credentials for the Service Principal
@@ -57,11 +61,11 @@ This is the exact output to paste into the **Terraform output JSON** field in th
 ```
 $ terraform output -json creds | jq
 {
-  "account_id": "c96d19fe-bea2-46b2-936e-e63a997a3404",
-  "client_id": "223b156e-8d26-411b-9373-eac1fab113c0",
-  "client_secret": "doseb7c3c3b46f04aa1f31500b6f5ef8634b",
-  "warehouse_id": "9b6df68db55819c0",
-  "workspace_url": "https://dbc-b7c30d5b-e68d.cloud.databricks.com"
+  "account_id": "00000000-0000-0000-0000-000000000000",
+  "client_id": "11111111-1111-1111-1111-111111111111",
+  "client_secret": "dose0000000000000000000000000000",
+  "warehouse_id": "0123456789abcdef",
+  "workspace_url": "https://dbc-xxxxxxxx-xxxx.cloud.databricks.com"
 }
 ```
 
@@ -78,7 +82,7 @@ python ../test-connection/test_databricks_connection.py \
   --client_secret "$(echo $CREDS | jq -r .client_secret)"
 ```
 
-A `FAIL` on `system.compute.clusters` is expected — this module intentionally doesn't grant `system.compute` (see [What This Module Does](#what-this-module-does)). Only `system.billing.usage`, `system.billing.list_prices`, and `system.access.workspaces_latest` need to pass.
+A `FAIL` on `system.compute.clusters` is expected — this module intentionally doesn't grant `system.compute` (see [Overview](#overview)). Only `system.billing.usage`, `system.billing.list_prices`, and `system.access.workspaces_latest` need to pass.
 
 ## Reference
 

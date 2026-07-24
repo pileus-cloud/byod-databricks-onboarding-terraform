@@ -1,0 +1,29 @@
+{
+  "name": "byod-databricks-onboarding-terraform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Terraform module for onboarding a Databricks account to Umbrellacost",
+  "scripts": {
+    "release": "semantic-release"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.5.0",
+    "@commitlint/config-conventional": "^20.5.0",
+    "semantic-release": "^25.0.3"
+  },
+  "release": {
+    "branches": [
+      "main"
+    ],
+    "plugins": [
+      "@semantic-release/commit-analyzer",
+      "@semantic-release/release-notes-generator",
+      "@semantic-release/github"
+    ]
+  }
+}
