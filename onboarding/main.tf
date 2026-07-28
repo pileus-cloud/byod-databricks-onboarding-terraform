@@ -13,7 +13,7 @@ terraform {
   required_version = ">= 1.0"
 }
 
-variable "databricks_host" {
+variable "databricks_workspace_url" {
   type        = string
   description = "Workspace URL, e.g. https://dbc-xxxxxx.cloud.databricks.com"
 }
@@ -30,13 +30,13 @@ variable "databricks_account_id" {
 }
 
 provider "databricks" {
-  host  = var.databricks_host
+  host  = var.databricks_workspace_url
   token = var.databricks_token
 }
 
 module "umbrellacost_integration" {
   source        = "../module"
-  workspace_url = var.databricks_host
+  workspace_url = var.databricks_workspace_url
   account_id    = var.databricks_account_id
   # enable_ip_allowlist     = true
   # umbrellacost_static_ips = ["1.2.3.4/32"]
